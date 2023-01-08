@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"math/big"
 	"net/http"
 )
@@ -34,15 +34,15 @@ func getJwksUri(issuerUri string) (string, error) {
 		return "", err
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
 
-	var openIdConfig map[string]string
+	var openIdConfig map[string]any
 	json.Unmarshal(body, &openIdConfig)
 
-	return "hello", nil
+	return openIdConfig["jwks_uri"].(string), nil
 }
 
 type JwksKey struct {
@@ -62,7 +62,7 @@ func getJwks(jwksUri string) ([]JwksKey, error) {
 	}
 
 	// Read the body
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func getJwks(jwksUri string) ([]JwksKey, error) {
 		Keys []JwksKey
 	}
 
-	// JSON Object -> array of keys
+	// JSON Object -> array of JwksKey
 	var data JwksResponse
 	json.Unmarshal(body, &data)
 	key_array := data.Keys
@@ -82,17 +82,17 @@ func getJwks(jwksUri string) ([]JwksKey, error) {
 func getKey(keys []JwksKey, kid string) (rsa.PublicKey, error) {
 	for _, key := range keys {
 		if key.Kid == kid {
-			// Extract N
+			// Extract N and format it
 			N := big.Int{}
-			nBytes, err := base64.StdEncoding.DecodeString(key.N)
+			nBytes, err := base64.RawURLEncoding.DecodeString(key.N)
 			if err != nil {
 				return rsa.PublicKey{}, err
 			}
 			N.SetBytes(nBytes)
 
-			// Extrace E
+			// Extrace E and format it
 			E := big.Int{}
-			eBytes, err := base64.StdEncoding.DecodeString(key.E)
+			eBytes, err := base64.RawURLEncoding.DecodeString(key.E)
 			if err != nil {
 				return rsa.PublicKey{}, err
 			}
