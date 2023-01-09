@@ -1,3 +1,5 @@
+// Gets the public key from an OAuth Provider
+
 package utils
 
 import (
@@ -10,6 +12,8 @@ import (
 	"net/http"
 )
 
+// Returns the public key with the id `kid` using the issuers OpenID
+// configuration
 func GetPublicKey(issuerUri string, kid string) (rsa.PublicKey, error) {
 	jwksUri, err := getJwksUri(issuerUri)
 	if err != nil {
@@ -19,7 +23,7 @@ func GetPublicKey(issuerUri string, kid string) (rsa.PublicKey, error) {
 	if err != nil {
 		return rsa.PublicKey{}, err
 	}
-	key, err := getKey(keys, kid)
+	key, err := getKeyFromJwks(keys, kid)
 	if err != nil {
 		return key, err
 	}
@@ -27,8 +31,8 @@ func GetPublicKey(issuerUri string, kid string) (rsa.PublicKey, error) {
 	return key, nil
 }
 
+// From the provider config page (as specified by OpenID) gets the JWKS URI
 func getJwksUri(issuerUri string) (string, error) {
-	// https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
 	resp, err := http.Get(issuerUri + "/.well-known/openid-configuration")
 	if err != nil {
 		return "", err
@@ -45,17 +49,8 @@ func getJwksUri(issuerUri string) (string, error) {
 	return openIdConfig["jwks_uri"].(string), nil
 }
 
-type JwksKey struct {
-	Kty string
-	Kid string
-	Use string
-	Alg string
-	N   string
-	E   string
-}
-
+// From the JWKS URI gets all the keys and serializes them for processing
 func getJwks(jwksUri string) ([]JwksKey, error) {
-	// https://www.rfc-editor.org/rfc/rfc7517#section-5
 	resp, err := http.Get(jwksUri + "/.well-known/openid-configuration")
 	if err != nil {
 		return nil, err
@@ -67,10 +62,6 @@ func getJwks(jwksUri string) ([]JwksKey, error) {
 		return nil, err
 	}
 
-	type JwksResponse struct {
-		Keys []JwksKey
-	}
-
 	// JSON Object -> array of JwksKey
 	var data JwksResponse
 	json.Unmarshal(body, &data)
@@ -79,7 +70,8 @@ func getJwks(jwksUri string) ([]JwksKey, error) {
 	return key_array, nil
 }
 
-func getKey(keys []JwksKey, kid string) (rsa.PublicKey, error) {
+// From the array of keys matches the key with the key id (`kid`)
+func getKeyFromJwks(keys []JwksKey, kid string) (rsa.PublicKey, error) {
 	for _, key := range keys {
 		if key.Kid == kid {
 			// Extract N and format it

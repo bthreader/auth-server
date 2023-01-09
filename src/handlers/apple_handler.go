@@ -10,7 +10,10 @@ import (
 	"os"
 )
 
+// Handles the authorization POST request
 func AppleHandler(w http.ResponseWriter, r *http.Request) {
+	// https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_rest_api
+
 	// Get the auth code from the request
 	var authCode string = r.FormValue("code")
 
@@ -47,7 +50,8 @@ func AppleHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(accessToken))
 }
 
-func getAppleVerificationResponseBody(authCode string) (string, error) {
+// Verify the Apple authorization code
+func getAppleVerificationResponseBody(authCode string) ([]byte, error) {
 	// Build the verification request
 	v := url.Values{}
 	v.Set("client_id", os.Getenv("APPLE_CLIENT_ID"))
@@ -60,18 +64,26 @@ func getAppleVerificationResponseBody(authCode string) (string, error) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return make([]byte, 0), err
 	}
 
-	return string(body), nil
+	return body, nil
 }
 
-func getIdTokenFromResponseBody(body string) (string, error) {
-	var data map[string]interface{}
-	err := json.Unmarshal([]byte(body), &data)
+type AppleValidationResponse struct {
+	AccessToken  string `json:"access_token"`
+	TokenType    string `json:"token_type"`
+	ExpiresIn    int    `json:"expires_in"`
+	RefreshToken string `json:"refresh_token"`
+	IdToken      string `json:"id_token"`
+}
+
+func getIdTokenFromResponseBody(body []byte) (string, error) {
+	var data AppleValidationResponse
+	err := json.Unmarshal(body, &data)
 	if err != nil {
 		return "", err
 	}
 
-	return data["id_token"].(string), nil
+	return data.IdToken, nil
 }

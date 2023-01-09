@@ -16,7 +16,9 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	http.HandleFunc("/foo", handlers.AppleHandler)
+	http.HandleFunc("/token/apple", handlers.AppleHandler)
+	http.HandleFunc("/token", handlers.UserTokenHandler)
+	http.HandleFunc("/keys", handlers.KeysHandler)
 
 	http.HandleFunc("/bar", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))

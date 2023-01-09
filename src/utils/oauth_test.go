@@ -39,7 +39,7 @@ func TestGetAppleJwks(t *testing.T) {
 	}
 }
 
-func TestGetKey(t *testing.T) {
+func TestGetKeyFromJwks(t *testing.T) {
 	n := "2Zc5d0-zkZ5AKmtYTvxHc3vRc41YfbklflxG9SWsg5qXUxvfgpktGAcxXLFAd9Uglzow9ezvmTGce5d3DhAYKwHAEPT9hbaMDj7DfmEwuNO8UahfnBkBXsCoUaL3QITF5_DAPsZroTqs7tkQQZ7qPkQXCSu2aosgOJmaoKQgwcOdjD0D49ne2B_dkxBcNCcJT9pTSWJ8NfGycjWAQsvC8CGstH8oKwhC5raDcc2IGXMOQC7Qr75d6J5Q24CePHj_JD7zjbwYy9KNH8wyr829eO_G4OEUW50FAN6HKtvjhJIguMl_1BLZ93z2KJyxExiNTZBUBQbbgCNBfzTv7JrxMw"
 	e := "AQAB"
 
@@ -65,7 +65,7 @@ func TestGetKey(t *testing.T) {
 	eInt := int(eFormatted.Int64())
 	fmt.Println(eInt)
 
-	matchedKey, err := getKey(keySet, "match")
+	matchedKey, err := getKeyFromJwks(keySet, "match")
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
