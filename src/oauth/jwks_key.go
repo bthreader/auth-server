@@ -1,4 +1,4 @@
-package utils
+package oauth
 
 // An entry in the "keys" JSON Array
 type JwksKey struct {

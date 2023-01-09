@@ -1,8 +1,8 @@
-// Generates access and refresh tokens, also provides a helper function for ID tokens
-
-package utils
+package token
 
 import (
+	"bthreader/auth-server/src/oauth"
+
 	"os"
 	"time"
 
@@ -41,11 +41,10 @@ func GenerateToken(tokenType TokenType, sub string) {
 	token.SignedString(os.Getenv("PRIVATE_KEY"))
 }
 
-// Retreives the subject claim from an ID token
 func GetSubFromIdToken(rawIdToken string, issuerUri string) (string, error) {
 	idToken, err := jwt.Parse(rawIdToken, func(token *jwt.Token) (interface{}, error) {
 		kid := token.Header["kid"].(string)
-		key, err := GetPublicKey(issuerUri, kid)
+		key, err := oauth.GetPublicKey(issuerUri, kid)
 		if err != nil {
 			return nil, err
 		}

@@ -1,13 +1,14 @@
 package handlers
 
 import (
-	"bthreader/auth-server/src/utils"
+	"bthreader/auth-server/src/oauth"
+
 	"encoding/json"
 	"net/http"
 )
 
 func KeysHandler(w http.ResponseWriter, r *http.Request) {
-	key := utils.JwksKey{
+	key := oauth.JwksKey{
 		Kty: "hello",
 		Kid: "hello",
 		Use: "hello",
@@ -16,8 +17,8 @@ func KeysHandler(w http.ResponseWriter, r *http.Request) {
 		E:   "hello",
 	}
 
-	keys := utils.JwksResponse{
-		Keys: append(make([]utils.JwksKey, 0), key),
+	keys := oauth.JwksResponse{
+		Keys: append(make([]oauth.JwksKey, 0), key),
 	}
 
 	b, _ := json.Marshal(keys)

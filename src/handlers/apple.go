@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"bthreader/auth-server/src/utils"
+	"bthreader/auth-server/src/token"
 
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -32,7 +32,7 @@ func AppleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sub, err := utils.GetSubFromIdToken(idToken, "https://appleid.apple.com/")
+	sub, err := token.GetSubFromIdToken(idToken, "https://appleid.apple.com/")
 
 	// Create refresh token
 	refreshToken := sub
@@ -62,7 +62,7 @@ func getAppleVerificationResponseBody(authCode string) ([]byte, error) {
 	// Perform the request
 	resp, err := http.PostForm("https://appleid.apple.com/auth/token", v)
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return make([]byte, 0), err
 	}

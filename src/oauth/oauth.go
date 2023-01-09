@@ -1,6 +1,6 @@
 // Gets the public key from an OAuth Provider
 
-package utils
+package oauth
 
 import (
 	"crypto/rsa"
@@ -56,13 +56,11 @@ func getJwks(jwksUri string) ([]JwksKey, error) {
 		return nil, err
 	}
 
-	// Read the body
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	// JSON Object -> array of JwksKey
 	var data JwksResponse
 	json.Unmarshal(body, &data)
 	key_array := data.Keys
@@ -91,7 +89,6 @@ func getKeyFromJwks(keys []JwksKey, kid string) (rsa.PublicKey, error) {
 			E.SetBytes(eBytes)
 			e := int(E.Int64())
 
-			// Build the public key object
 			return rsa.PublicKey{
 				N: &N,
 				E: e,

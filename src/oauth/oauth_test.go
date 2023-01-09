@@ -1,4 +1,4 @@
-package utils
+package oauth
 
 import (
 	"crypto/rsa"
