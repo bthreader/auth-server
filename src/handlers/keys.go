@@ -2,23 +2,30 @@ package handlers
 
 import (
 	"bthreader/auth-server/src/oauth"
+	"bthreader/auth-server/src/token"
 
 	"encoding/json"
 	"net/http"
 )
 
 func KeysHandler(w http.ResponseWriter, r *http.Request) {
-	key := oauth.JwksKey{
+	publicKey, err := token.GetPublicKey()
+	if err != nil {
+		http.Error(w, "Cannot get public keys from server", http.StatusInternalServerError)
+	}
+
+	jwk := oauth.JwksKey{
 		Kty: "hello",
-		Kid: "hello",
+		Kid: "0",
 		Use: "hello",
-		Alg: "hello",
-		N:   "hello",
+		Alg: "RS256",
+		N:   publicKey.N.String(),
 		E:   "hello",
+		// E:   string(publicKey.E),
 	}
 
 	keys := oauth.JwksResponse{
-		Keys: append(make([]oauth.JwksKey, 0), key),
+		Keys: append(make([]oauth.JwksKey, 0), jwk),
 	}
 
 	b, _ := json.Marshal(keys)

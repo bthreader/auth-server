@@ -62,6 +62,14 @@ func GetSubFromIdToken(rawIdToken string, issuerUri string) (string, error) {
 	return claims.Subject, err
 }
 
+func GetPublicKey() (rsa.PublicKey, error) {
+	privateKey, err := getPrivateKey()
+	if err != nil {
+		return rsa.PublicKey{}, err
+	}
+	return privateKey.PublicKey, nil
+}
+
 func getPrivateKey() (*rsa.PrivateKey, error) {
 	privateKeyFile, err := os.ReadFile("../../keys/private_key.pem")
 	if err != nil {
