@@ -2,6 +2,7 @@ package main
 
 import (
 	"bthreader/auth-server/src/handlers"
+
 	"log"
 	"net/http"
 
@@ -9,7 +10,7 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
+	err := godotenv.Load("../../.env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
@@ -18,7 +19,7 @@ func main() {
 		forceMethod(POST, w, r, handlers.AppleHandler)
 	})
 	http.HandleFunc("/token", func(w http.ResponseWriter, r *http.Request) {
-		forceMethod(POST, w, r, handlers.UserTokenHandler)
+		forceMethod(POST, w, r, handlers.UserHandler)
 	})
 	http.HandleFunc("/keys", func(w http.ResponseWriter, r *http.Request) {
 		forceMethod(GET, w, r, handlers.KeysHandler)

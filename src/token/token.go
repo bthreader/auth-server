@@ -3,18 +3,17 @@ package token
 import (
 	"bthreader/auth-server/src/oauth"
 
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type MyCustomClaims struct {
-	Type string `json:"type"`
-	jwt.RegisteredClaims
-}
-
-func GenerateToken(tokenType TokenType, sub string) {
+// Generates access or refresh JWT for a given subject `sub`
+func GenerateToken(tokenType TokenType, sub string) (string, error) {
 	var expiresAt time.Time
 	switch tokenType {
 	case RefreshToken:
@@ -34,15 +33,21 @@ func GenerateToken(tokenType TokenType, sub string) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	privateKey, err := getPrivateKey()
+	if err != nil {
+		return "", err
+	}
+	tokenString, err := token.SignedString(privateKey)
 
-	// privateKey := rsa.PrivateKey{}
-	// publicKey :=
+	if err != nil {
+		return "", err
+	}
 
-	token.SignedString(os.Getenv("PRIVATE_KEY"))
+	return tokenString, nil
 }
 
 func GetSubFromIdToken(rawIdToken string, issuerUri string) (string, error) {
-	idToken, err := jwt.Parse(rawIdToken, func(token *jwt.Token) (interface{}, error) {
+	idToken, err := jwt.ParseWithClaims(rawIdToken, &MyCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		kid := token.Header["kid"].(string)
 		key, err := oauth.GetPublicKey(issuerUri, kid)
 		if err != nil {
@@ -52,5 +57,22 @@ func GetSubFromIdToken(rawIdToken string, issuerUri string) (string, error) {
 		return key, nil
 	})
 
-	return idToken.Raw, err
+	claims := idToken.Claims.(*MyCustomClaims)
+
+	return claims.Subject, err
+}
+
+func getPrivateKey() (*rsa.PrivateKey, error) {
+	privateKeyFile, err := os.ReadFile("../../keys/private_key.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	block, _ := pem.Decode(privateKeyFile)
+	privateKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return privateKey.(*rsa.PrivateKey), nil
 }

@@ -11,9 +11,8 @@ import (
 )
 
 // Handles the authorization POST request
+// https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_rest_api
 func AppleHandler(w http.ResponseWriter, r *http.Request) {
-	// https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_rest_api
-
 	// Get the auth code from the request
 	var authCode string = r.FormValue("code")
 
@@ -34,32 +33,26 @@ func AppleHandler(w http.ResponseWriter, r *http.Request) {
 
 	sub, err := token.GetSubFromIdToken(idToken, "https://appleid.apple.com/")
 
-	// Create refresh token
-	refreshToken := sub
+	refreshToken, _ := token.GenerateToken(token.RefreshToken, sub)
+	accessToken, _ := token.GenerateToken(token.AccessToken, sub)
 
-	// Create access token
-	accessToken := "spaghetti"
-
-	// Put the refresh token in a cookie and put the access token in the body
+	// Refresh token in a cookie, access token in body
 	refreshTokenCookie := &http.Cookie{
 		Name:  "refreshToken",
 		Value: refreshToken,
 	}
 	http.SetCookie(w, refreshTokenCookie)
-
 	w.Write([]byte(accessToken))
 }
 
 // Verify the Apple authorization code
 func getAppleVerificationResponseBody(authCode string) ([]byte, error) {
-	// Build the verification request
 	v := url.Values{}
 	v.Set("client_id", os.Getenv("APPLE_CLIENT_ID"))
 	v.Set("client_secret", os.Getenv("APPLE_CLIENT_SECRET"))
 	v.Set("code", authCode)
 	v.Set("grant_type", "authorization_code")
 
-	// Perform the request
 	resp, err := http.PostForm("https://appleid.apple.com/auth/token", v)
 
 	body, err := io.ReadAll(resp.Body)
@@ -68,14 +61,6 @@ func getAppleVerificationResponseBody(authCode string) ([]byte, error) {
 	}
 
 	return body, nil
-}
-
-type AppleValidationResponse struct {
-	AccessToken  string `json:"access_token"`
-	TokenType    string `json:"token_type"`
-	ExpiresIn    int    `json:"expires_in"`
-	RefreshToken string `json:"refresh_token"`
-	IdToken      string `json:"id_token"`
 }
 
 func getIdTokenFromResponseBody(body []byte) (string, error) {

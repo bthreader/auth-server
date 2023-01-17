@@ -3,7 +3,6 @@ package oauth
 import (
 	"crypto/rsa"
 	"encoding/base64"
-	"fmt"
 	"math/big"
 	"reflect"
 	"testing"
@@ -56,14 +55,12 @@ func TestGetKeyFromJwks(t *testing.T) {
 	nFormatted := big.Int{}
 	nBytes, err := base64.RawURLEncoding.DecodeString(n)
 	nFormatted.SetBytes(nBytes)
-	fmt.Println(nFormatted.String())
 
 	// Format e
 	eFormatted := big.Int{}
 	eBytes, err := base64.RawURLEncoding.DecodeString(e)
 	eFormatted.SetBytes(eBytes)
 	eInt := int(eFormatted.Int64())
-	fmt.Println(eInt)
 
 	matchedKey, err := getKeyFromJwks(keySet, "match")
 	if err != nil {
