@@ -7,5 +7,8 @@ testv:
 run:
 	go run bthreader/auth-server/src/main
 gen_keys:
+	mkdir keys
+	$(MAKE) rotate_keys
+rotate_keys:
 	openssl genrsa -out keys/private_key.pem 2048;
 	openssl rsa -in keys/private_key.pem -out keys/public_key.pem

@@ -15,7 +15,7 @@ func KeysHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jwk := oauth.JwksKey{
-		Kty: "hello",
+		Kty: "trigger",
 		Kid: "0",
 		Use: "hello",
 		Alg: "RS256",
