@@ -1,7 +1,7 @@
 package token
 
 import (
-	"bthreader/auth-server/src/oauth"
+	"bthreader/auth-server/src/jwks"
 
 	"crypto/rsa"
 	"crypto/x509"
@@ -22,8 +22,8 @@ func GenerateToken(tokenType TokenType, sub string) (string, error) {
 		expiresAt = time.Now().Add(time.Hour)
 	}
 
-	claims := &MyCustomClaims{
-		string(tokenType),
+	claims := MyCustomClaims{
+		tokenType,
 		jwt.RegisteredClaims{
 			Issuer:    "bthreader",
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -37,8 +37,10 @@ func GenerateToken(tokenType TokenType, sub string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	tokenString, err := token.SignedString(privateKey)
 
+	token.Header["kid"] = "0"
+
+	tokenString, err := token.SignedString(privateKey)
 	if err != nil {
 		return "", err
 	}
@@ -49,7 +51,7 @@ func GenerateToken(tokenType TokenType, sub string) (string, error) {
 func GetSubFromIdToken(rawIdToken string, issuerUri string) (string, error) {
 	idToken, err := jwt.ParseWithClaims(rawIdToken, &MyCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		kid := token.Header["kid"].(string)
-		key, err := oauth.GetPublicKey(issuerUri, kid)
+		key, err := jwks.GetIssuerPublicKey(issuerUri, kid)
 		if err != nil {
 			return nil, err
 		}

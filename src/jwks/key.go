@@ -1,6 +1,7 @@
-package oauth
+package jwks
 
 // An entry in the "keys" JSON Array
+// https://www.rfc-editor.org/rfc/rfc7517
 type JwksKey struct {
 	Kty string `json:"kty"`
 	Kid string `json:"kid"`

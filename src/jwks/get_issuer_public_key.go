@@ -1,6 +1,4 @@
-// Gets the public key from an OAuth Provider
-
-package oauth
+package jwks
 
 import (
 	"crypto/rsa"
@@ -14,7 +12,7 @@ import (
 
 // Returns the public key with the id `kid` using the issuers OpenID
 // configuration
-func GetPublicKey(issuerUri string, kid string) (rsa.PublicKey, error) {
+func GetIssuerPublicKey(issuerUri string, kid string) (rsa.PublicKey, error) {
 	jwksUri, err := getJwksUri(issuerUri)
 	if err != nil {
 		return rsa.PublicKey{}, err
