@@ -17,11 +17,11 @@ func GetIssuerPublicKey(issuerUri string, kid string) (rsa.PublicKey, error) {
 	if err != nil {
 		return rsa.PublicKey{}, err
 	}
-	keys, err := getJwks(jwksUri)
+	keys, err := GetJwks(jwksUri)
 	if err != nil {
 		return rsa.PublicKey{}, err
 	}
-	key, err := getKeyFromJwks(keys, kid)
+	key, err := GetKeyFromJwks(keys, kid)
 	if err != nil {
 		return key, err
 	}
@@ -48,7 +48,7 @@ func getJwksUri(issuerUri string) (string, error) {
 }
 
 // From the JWKS URI gets all the keys and serializes them for processing
-func getJwks(jwksUri string) ([]JwksKey, error) {
+func GetJwks(jwksUri string) ([]JwksKey, error) {
 	resp, err := http.Get(jwksUri + "/.well-known/openid-configuration")
 	if err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func getJwks(jwksUri string) ([]JwksKey, error) {
 }
 
 // From the array of keys matches the key with the key id (`kid`)
-func getKeyFromJwks(keys []JwksKey, kid string) (rsa.PublicKey, error) {
+func GetKeyFromJwks(keys []JwksKey, kid string) (rsa.PublicKey, error) {
 	for _, key := range keys {
 		if key.Kid == kid {
 			// Extract N and format it

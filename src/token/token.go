@@ -2,6 +2,7 @@ package token
 
 import (
 	"bthreader/auth-server/src/jwks"
+	"path/filepath"
 
 	"crypto/rsa"
 	"crypto/x509"
@@ -73,7 +74,11 @@ func GetPublicKey() (rsa.PublicKey, error) {
 }
 
 func getPrivateKey() (*rsa.PrivateKey, error) {
-	privateKeyFile, err := os.ReadFile("../../keys/private_key.pem")
+	wd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+	privateKeyFile, err := os.ReadFile(filepath.Join(wd, "../../keys/private_key.pem"))
 	if err != nil {
 		return nil, err
 	}

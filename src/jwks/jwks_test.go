@@ -22,7 +22,7 @@ func TestGetJwksUris(t *testing.T) {
 }
 
 func TestGetAppleJwks(t *testing.T) {
-	keys, err := getJwks(APPLE_JWKS_URI)
+	keys, err := GetJwks(APPLE_JWKS_URI)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
@@ -63,7 +63,7 @@ func TestGetKeyFromJwks(t *testing.T) {
 	eFormatted.SetBytes(eBytes)
 	eInt := int(eFormatted.Int64())
 
-	matchedKey, err := getKeyFromJwks(keySet, "match")
+	matchedKey, err := GetKeyFromJwks(keySet, "match")
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
