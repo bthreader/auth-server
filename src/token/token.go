@@ -2,10 +2,10 @@ package token
 
 import (
 	"bthreader/auth-server/src/jwks"
-	"path/filepath"
 
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/pem"
 	"os"
 	"time"
@@ -65,25 +65,30 @@ func GetSubFromIdToken(rawIdToken string, issuerUri string) (string, error) {
 	return claims.Subject, err
 }
 
-func GetPublicKey() (rsa.PublicKey, error) {
-	privateKey, err := getPrivateKey()
+func GetPublicKey() (*rsa.PublicKey, error) {
+	publicKeyString := os.Getenv("PUBLIC_KEY")
+	publicKeyBytes, err := base64.StdEncoding.DecodeString(publicKeyString)
 	if err != nil {
-		return rsa.PublicKey{}, err
+		return nil, err
 	}
-	return privateKey.PublicKey, nil
+
+	block, _ := pem.Decode(publicKeyBytes)
+	publicKey, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return publicKey.(*rsa.PublicKey), nil
 }
 
 func getPrivateKey() (*rsa.PrivateKey, error) {
-	wd, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-	privateKeyFile, err := os.ReadFile(filepath.Join(wd, "../../keys/private_key.pem"))
+	privateKeyString := os.Getenv("PRIVATE_KEY")
+	privateKeyBytes, err := base64.StdEncoding.DecodeString(privateKeyString)
 	if err != nil {
 		return nil, err
 	}
 
-	block, _ := pem.Decode(privateKeyFile)
+	block, _ := pem.Decode(privateKeyBytes)
 	privateKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 	if err != nil {
 		return nil, err

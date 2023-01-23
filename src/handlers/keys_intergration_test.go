@@ -9,9 +9,12 @@ import (
 	"testing"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/joho/godotenv"
 )
 
 func TestGetPublicKeyFromEndpoint(t *testing.T) {
+	godotenv.Load("../../.env")
+
 	// Get the key from the endpoint
 	ts := httptest.NewServer(http.HandlerFunc(KeysHandler))
 

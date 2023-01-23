@@ -23,6 +23,3 @@ go.work
 
 # Environment
 .env
-
-# Key files
-keys/

@@ -4,9 +4,11 @@ import (
 	"testing"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/joho/godotenv"
 )
 
 func TestGetPrivateKey(t *testing.T) {
+	godotenv.Load("../../.env")
 	key, err := getPrivateKey()
 
 	if err != nil {
@@ -20,10 +22,15 @@ func TestGetPrivateKey(t *testing.T) {
 }
 
 func TestGetPublicKey(t *testing.T) {
-	_, err := GetPublicKey()
+	publicKey, err := GetPublicKey()
 
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	if publicKey == nil {
+		t.Log("nul public key pointer")
 		t.FailNow()
 	}
 }
@@ -46,7 +53,7 @@ func TestGenerateRefreshToken(t *testing.T) {
 				t.FailNow()
 			}
 
-			return &key, nil
+			return key, nil
 		},
 	)
 	if err != nil {

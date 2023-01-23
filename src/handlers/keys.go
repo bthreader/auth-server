@@ -3,7 +3,6 @@ package handlers
 import (
 	"bthreader/auth-server/src/jwks"
 	"bthreader/auth-server/src/token"
-	"fmt"
 	"strconv"
 
 	"encoding/base64"
@@ -13,8 +12,7 @@ import (
 
 func KeysHandler(w http.ResponseWriter, r *http.Request) {
 	publicKey, err := token.GetPublicKey()
-	if err != nil {
-		fmt.Print(err)
+	if err != nil || publicKey == nil {
 		http.Error(w, "Cannot get public keys from server", http.StatusInternalServerError)
 		return
 	}

@@ -49,7 +49,7 @@ func getJwksUri(issuerUri string) (string, error) {
 
 // From the JWKS URI gets all the keys and serializes them for processing
 func GetJwks(jwksUri string) ([]JwksKey, error) {
-	resp, err := http.Get(jwksUri + "/.well-known/openid-configuration")
+	resp, err := http.Get(jwksUri)
 	if err != nil {
 		return nil, err
 	}
