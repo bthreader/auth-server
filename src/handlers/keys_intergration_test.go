@@ -5,7 +5,6 @@ import (
 	"bthreader/auth-server/src/token"
 	"net/http"
 	"net/http/httptest"
-
 	"testing"
 
 	"github.com/golang-jwt/jwt/v4"

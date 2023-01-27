@@ -2,18 +2,17 @@ package token
 
 import (
 	"bthreader/auth-server/src/jwks"
-
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
+	"net/http"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-// Generates access or refresh JWT for a given subject `sub`
 func GenerateToken(tokenType TokenType, sub string) (string, error) {
 	var expiresAt time.Time
 	switch tokenType {
@@ -49,16 +48,36 @@ func GenerateToken(tokenType TokenType, sub string) (string, error) {
 	return tokenString, nil
 }
 
-func GetSubFromIdToken(rawIdToken string, issuerUri string) (string, error) {
-	idToken, err := jwt.ParseWithClaims(rawIdToken, &MyCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-		kid := token.Header["kid"].(string)
-		key, err := jwks.GetIssuerPublicKey(issuerUri, kid)
-		if err != nil {
-			return nil, err
-		}
+func GenerateRefreshTokenCookie(sub string) *http.Cookie {
+	refreshToken, _ := GenerateToken(RefreshToken, sub)
 
-		return key, nil
-	})
+	refreshTokenCookie := &http.Cookie{
+		Name:     "refreshToken",
+		Value:    refreshToken,
+		HttpOnly: true,
+		Secure:   true,
+	}
+
+	return refreshTokenCookie
+}
+
+func GetSubFromIdToken(rawIdToken string, issuerUri string) (string, error) {
+	idToken, err := jwt.ParseWithClaims(
+		rawIdToken,
+		&MyCustomClaims{},
+		func(token *jwt.Token) (interface{}, error) {
+			kid := token.Header["kid"].(string)
+			key, err := jwks.GetIssuerPublicKey(issuerUri, kid)
+			if err != nil {
+				return nil, err
+			}
+
+			return &key, nil
+		},
+	)
+	if err != nil {
+		return "", err
+	}
 
 	claims := idToken.Claims.(*MyCustomClaims)
 

@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"bthreader/auth-server/src/token"
-
 	"encoding/json"
 	"io"
 	"net/http"
@@ -24,7 +23,7 @@ func AppleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idToken, err := getIdTokenFromResponseBody(body)
+	idToken, err := getIdTokenFromAppleResponseBody(body)
 
 	if err != nil {
 		http.Error(w, "Malformed apple verification response", 400)
@@ -42,7 +41,8 @@ func AppleHandler(w http.ResponseWriter, r *http.Request) {
 		Value: refreshToken,
 	}
 	http.SetCookie(w, refreshTokenCookie)
-	w.Write([]byte(accessToken))
+	v, _ := json.Marshal(token.TokenResponseBody{AccessToken: accessToken})
+	w.Write(v)
 }
 
 // Verify the Apple authorization code
@@ -63,7 +63,7 @@ func getAppleVerificationResponseBody(authCode string) ([]byte, error) {
 	return body, nil
 }
 
-func getIdTokenFromResponseBody(body []byte) (string, error) {
+func getIdTokenFromAppleResponseBody(body []byte) (string, error) {
 	var data AppleValidationResponse
 	err := json.Unmarshal(body, &data)
 	if err != nil {

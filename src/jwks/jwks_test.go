@@ -39,8 +39,7 @@ func TestGetAppleJwks(t *testing.T) {
 }
 
 func TestGetKeyFromJwks(t *testing.T) {
-	// Real example from an Apple public key
-	n := "2Zc5d0-zkZ5AKmtYTvxHc3vRc41YfbklflxG9SWsg5qXUxvfgpktGAcxXLFAd9Uglzow9ezvmTGce5d3DhAYKwHAEPT9hbaMDj7DfmEwuNO8UahfnBkBXsCoUaL3QITF5_DAPsZroTqs7tkQQZ7qPkQXCSu2aosgOJmaoKQgwcOdjD0D49ne2B_dkxBcNCcJT9pTSWJ8NfGycjWAQsvC8CGstH8oKwhC5raDcc2IGXMOQC7Qr75d6J5Q24CePHj_JD7zjbwYy9KNH8wyr829eO_G4OEUW50FAN6HKtvjhJIguMl_1BLZ93z2KJyxExiNTZBUBQbbgCNBfzTv7JrxMw"
+	n := "or83anRxFNTbjOy47m4SRDZQ7WpX_yjJdqN_LgNUBfbb_VnBwIUv_k4E1tXOE1yQC704YAT6JQ4AJtvLw598NxSuyXSvo-JCQ4pNugjVZ0w2MErJtARcxCu4LI6gsA_xSfSfuNVVSdrHqg8G-wsog0BS6N4M5IJtUlRR6UtjLaJxgqFGzV5sHWAfmpBekqCC5l19OXtE9J00r_Wjo4kfleonpVlEHszx5KUzShfGTGwgoeryNcp4yBULh8El8vt50a4SP_D74gCL5YINUl4E8hfQoqbPoxLj33oXYEvMKL34xYErEF5Tw39oAEfky3OgTXsCQvAp5il7HQjRY1JGow"
 	e := "AQAB"
 
 	keySet := []JwksKey{{

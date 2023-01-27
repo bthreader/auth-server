@@ -6,6 +6,13 @@ testv:
 	go test ./... -v | sed ''/FAIL/s//$$(printf "\033[31mFAIL\033[0m")/''
 run:
 	go run bthreader/auth-server/src/main
+reload:
+	$(MAKE) build
+	$(MAKE) run
+tunnel:
+	cloudflared tunnel run dev
+serve_html:
+	cd src/handlers/ && python3 -m http.server
 gen_keys:
 	mkdir keys
 	openssl genrsa -out keys/private_key.pem 2048

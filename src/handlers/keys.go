@@ -3,11 +3,10 @@ package handlers
 import (
 	"bthreader/auth-server/src/jwks"
 	"bthreader/auth-server/src/token"
-	"strconv"
-
 	"encoding/base64"
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 func KeysHandler(w http.ResponseWriter, r *http.Request) {

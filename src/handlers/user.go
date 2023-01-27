@@ -2,11 +2,10 @@ package handlers
 
 import (
 	"bthreader/auth-server/src/token"
-	"os"
-
 	"encoding/json"
 	"io"
 	"net/http"
+	"os"
 )
 
 const malformedBodyMsg = `Malformed body, please make the request in the form:
@@ -30,13 +29,12 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 
 	if up.User == os.Getenv("ADMIN_USER") && up.Password == os.Getenv("ADMIN_PASSWORD") {
 		// Authenticated
-		token, err := token.GenerateToken(token.AccessToken, "user")
-		if err != nil {
-			http.Error(w, "Error generating token", http.StatusInternalServerError)
-			return
-		}
+		refreshTokenCookie := token.GenerateRefreshTokenCookie(up.User)
+		http.SetCookie(w, refreshTokenCookie)
 
-		w.Write([]byte(token))
+		accessToken, _ := token.GenerateToken(token.AccessToken, up.User)
+		v, _ := json.Marshal(token.TokenResponseBody{AccessToken: accessToken})
+		w.Write(v)
 		return
 	}
 

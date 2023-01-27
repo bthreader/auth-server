@@ -36,15 +36,18 @@ func getJwksUri(issuerUri string) (string, error) {
 		return "", err
 	}
 
-	body, err := io.ReadAll(resp.Body)
+	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
 
-	var openIdConfig map[string]any
-	json.Unmarshal(body, &openIdConfig)
+	var body map[string]any
+	err = json.Unmarshal(bodyBytes, &body)
+	if err != nil {
+		return "", err
+	}
 
-	return openIdConfig["jwks_uri"].(string), nil
+	return body["jwks_uri"].(string), nil
 }
 
 // From the JWKS URI gets all the keys and serializes them for processing
@@ -66,7 +69,8 @@ func GetJwks(jwksUri string) ([]JwksKey, error) {
 	return key_array, nil
 }
 
-// From the array of keys matches the key with the key id (`kid`)
+// From the array of keys matches the key with the key id (`kid`).
+// Returns "No matching key found" error if one doesn't exist.
 func GetKeyFromJwks(keys []JwksKey, kid string) (rsa.PublicKey, error) {
 	for _, key := range keys {
 		if key.Kid == kid {

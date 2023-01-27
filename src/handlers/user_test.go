@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bthreader/auth-server/src/token"
 	"bytes"
 	"encoding/json"
 	"io"
@@ -25,23 +26,27 @@ func TestSuccess(t *testing.T) {
 
 	requestBody, _ := json.Marshal(upMock)
 	resp, err := http.Post(ts.URL, "application/json", bytes.NewReader(requestBody))
-
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	respBodyBytes, _ := io.ReadAll(resp.Body)
-	respBody := string(respBodyBytes)
 
+	respBody := token.TokenResponseBody{}
+	err = json.Unmarshal(respBodyBytes, &respBody)
+	if err != nil {
+		t.Log("could not de-serialized body")
+		t.FailNow()
+	}
 	if resp.Status != "200 OK" {
 		t.Log("request failed")
 		t.Logf("response status: %s", resp.Status)
 		t.Logf("response body: %s", respBody)
 		t.FailNow()
 	}
-
-	if respBody == "" {
+	if respBody.AccessToken == "" {
+		t.Log(respBody.AccessToken)
 		t.Log("no access token received")
 		t.FailNow()
 	}
