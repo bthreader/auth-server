@@ -1,3 +1,5 @@
+// Package jwks providers a set of functions for obtaining and working with
+// Json Web Key Sets of OAuth providers.
 package jwks
 
 import (
