@@ -1,3 +1,4 @@
+// Package token provides a set of functions for generating and inspecting JSON Web Tokens.
 package token
 
 import (
