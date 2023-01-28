@@ -47,6 +47,9 @@ func main() {
 	mux.HandleFunc("/keys", func(w http.ResponseWriter, r *http.Request) {
 		forceMethod(GET, w, r, handlers.KeysHandler)
 	})
+	mux.HandleFunc("/token/refresh", func(w http.ResponseWriter, r *http.Request) {
+		forceMethod(POST, w, r, handlers.RefreshHandler)
+	})
 
 	log.Fatal(http.ListenAndServe(":8080", corsMiddleware(mux)))
 }

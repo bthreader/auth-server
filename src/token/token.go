@@ -53,7 +53,7 @@ func GenerateRefreshTokenCookie(sub string) *http.Cookie {
 	refreshToken, _ := GenerateToken(RefreshToken, sub)
 
 	refreshTokenCookie := &http.Cookie{
-		Name:     "refreshToken",
+		Name:     "refresh_token",
 		Value:    refreshToken,
 		HttpOnly: true,
 		Secure:   true,

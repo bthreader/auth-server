@@ -39,7 +39,7 @@ func TestSuccess(t *testing.T) {
 		t.Log("could not de-serialized body")
 		t.FailNow()
 	}
-	if resp.Status != "200 OK" {
+	if resp.StatusCode != http.StatusOK {
 		t.Log("request failed")
 		t.Logf("response status: %s", resp.Status)
 		t.Logf("response body: %s", respBody)
@@ -72,7 +72,7 @@ func TestBadRequest(t *testing.T) {
 		t.Log(err)
 		t.Fail()
 	}
-	if resp.Status == "200 OK" {
+	if resp.StatusCode == http.StatusOK {
 		t.Log("request didn't fail")
 		t.Fail()
 	}
@@ -104,7 +104,7 @@ func TestBadCreds(t *testing.T) {
 		t.Log(err)
 		t.Fail()
 	}
-	if resp.Status == "200 OK" {
+	if resp.StatusCode == http.StatusOK {
 		t.Fail()
 	}
 
