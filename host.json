@@ -1,0 +1,10 @@
+{
+  "version": "2.0",
+
+  "customHandler": {
+    "description": {
+      "defaultExecutablePath": "./bin/auth-server"
+    },
+    "enableForwardingHttpRequest" : true
+  }
+}

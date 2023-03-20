@@ -32,43 +32,14 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-
-	mux := http.NewServeMux()
-
-	// http.HandleFunc("/token/apple", func(w http.ResponseWriter, r *http.Request) {
-	// 	forceMethod(POST, w, r, handlers.AppleHandler)
-	// })
-	mux.HandleFunc("/token/google", func(w http.ResponseWriter, r *http.Request) {
-		forceMethod(POST, w, r, handlers.GoogleHandler)
-	})
-	mux.HandleFunc("/token", func(w http.ResponseWriter, r *http.Request) {
-		forceMethod(POST, w, r, handlers.UserHandler)
-	})
-	mux.HandleFunc("/keys", func(w http.ResponseWriter, r *http.Request) {
-		forceMethod(GET, w, r, handlers.KeysHandler)
-	})
-	mux.HandleFunc("/token/refresh", func(w http.ResponseWriter, r *http.Request) {
-		forceMethod(POST, w, r, handlers.RefreshHandler)
-	})
-
-	log.Fatal(http.ListenAndServe(":8080", corsMiddleware(mux)))
-}
-
-// Ensures a request has a certain method before routing it onto a handler
-func forceMethod(
-	m HTTPMethod,
-	w http.ResponseWriter,
-	r *http.Request,
-	h func(http.ResponseWriter, *http.Request),
-) {
-	var method HTTPMethod = HTTPMethod(r.Method)
-	switch method {
-	case m:
-		h(w, r)
-	case OPTIONS:
-		return
-	default:
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
+	listenAddr := ":8080"
+	if val, ok := os.LookupEnv("FUNCTIONS_CUSTOMHANDLER_PORT"); ok {
+		listenAddr = ":" + val
 	}
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/token/google", handlers.GoogleHandler)
+	mux.HandleFunc("/api/token", handlers.UserHandler)
+	mux.HandleFunc("/api/keys", handlers.KeysHandler)
+	mux.HandleFunc("/api/token/refresh", handlers.RefreshHandler)
+	log.Fatal(http.ListenAndServe(listenAddr, corsMiddleware(mux)))
 }
