@@ -14,9 +14,9 @@ tunnel:
 serve_html:
 	cd src/handlers/ && python3 -m http.server
 gen_keys:
-	mkdir keys
-	openssl genrsa -out keys/private_key.pem 2048
-	echo "PRIVATE_KEY=\"$$(base64 keys/private_key.pem | tr -d '\n')\"" >> .env
-	openssl rsa -in keys/private_key.pem -out keys/public_key.pem -pubout
-	echo "PUBLIC_KEY=\"$$(base64 keys/public_key.pem | tr -d '\n')\"" >> .env
-	rm -r keys
+	mkdir tempkeysdir
+	openssl genrsa -out tempkeysdir/private_key.pem 2048
+	echo "PRIVATE_KEY=\"$$(base64 tempkeysdir/private_key.pem | tr -d '\n')\"" >> .env
+	openssl rsa -in tempkeysdir/private_key.pem -out tempkeysdir/public_key.pem -pubout
+	echo "PUBLIC_KEY=\"$$(base64 tempkeysdir/public_key.pem | tr -d '\n')\"" >> .env
+	rm -r tempkeysdir
