@@ -28,7 +28,6 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if up.User == os.Getenv("ADMIN_USER") && up.Password == os.Getenv("ADMIN_PASSWORD") {
-		// Authenticated
 		refreshTokenCookie := token.GenerateRefreshTokenCookie(up.User)
 		http.SetCookie(w, refreshTokenCookie)
 
