@@ -1,5 +1,7 @@
 build:
 	go build -o bin/auth-server bthreader/auth-server/src/main
+build_windows:
+	GOOS=windows GOARCH=amd64 go build -o bin/auth-server bthreader/auth-server/src/main
 test:
 	go test ./... | sed ''/FAIL/s//$$(printf "\033[31mFAIL\033[0m")/''
 testv:
