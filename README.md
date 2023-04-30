@@ -1,8 +1,12 @@
 # Authorization Server
 
-A service to use across my personal projects to allow sign in with:
-- [x] Username and password (/token)
-- [x] Sign In with Google for Web (/token/google)
-- [ ] Sign in with Apple - delayed for the time being due to paywall
+[![CICD](https://github.com/bthreader/auth-server/actions/workflows/cicd.yml/badge.svg)](https://github.com/bthreader/auth-server/actions/workflows/cicd.yml)
 
-Cloudflare tunnel service used for local testing with HTTPS.
+https://auth.bthreader.uk/api
+
+A service to use across my personal projects to allow sign in with:
+
+- Username and password @ /token
+- Sign In with Google for Web @ /token/google
+
+Public keys available @ /keys 😊
