@@ -47,6 +47,7 @@ jobs:
         run: |
           make build_windows
           make zip
+          ls
 
       - name: Login to Azure
         uses: Azure/login@v1
