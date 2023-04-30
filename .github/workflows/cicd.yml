@@ -43,20 +43,16 @@ jobs:
         with:
           go-version: 1.19
 
-      - name: Build
+      - name: Build and zip
         run: |
           make build_windows
           make zip
 
       - name: Login to Azure
-        uses: azure/login@v1
+        uses: Azure/login@v1
         with:
-          client-id: ${{ secrets.AZ_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZ_TENANT_ID }}
-          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+          creds: '{"clientId":"${{ secrets.AZ_CLIENT_ID }}","clientSecret":"${{ secrets.AZ_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZ_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZ_TENANT_ID }}"}'
 
       - name: Upload
         run: |
           az functionapp deployment source config-zip -g ${{ secrets.AZ_RESOURCE_GROUP }} -n ${{ secrets.AZ_APP_NAME }} --src './zipped_files.zip'
-
-
