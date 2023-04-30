@@ -11,10 +11,6 @@ run:
 reload:
 	$(MAKE) build
 	$(MAKE) run
-tunnel:
-	cloudflared tunnel run dev
-serve_html:
-	cd src/handlers/ && python3 -m http.server
 gen_keys:
 	mkdir tempkeysdir
 	openssl genrsa -out tempkeysdir/private_key.pem 2048
@@ -22,3 +18,5 @@ gen_keys:
 	openssl rsa -in tempkeysdir/private_key.pem -out tempkeysdir/public_key.pem -pubout
 	echo "PUBLIC_KEY=\"$$(base64 tempkeysdir/public_key.pem | tr -d '\n')\"" >> .env
 	rm -r tempkeysdir
+zip:
+	zip -r zipped_files.zip .
